@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring 2026 Specialized Collection - Partner Portal</title>
+    <style>
+        :root { --primary: #4a6741; --accent: #8fb9a8; --bg: #fdfdfd; --card: #ffffff; --text: #2c3e50; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Language & Header */
+        .lang-switch { text-align: right; margin-bottom: 20px; }
+        .lang-btn { background: #eee; border: none; padding: 8px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; transition: 0.3s; }
+        .lang-btn.active { background: var(--primary); color: white; }
+        header { text-align: center; padding: 30px 0; border-bottom: 2px solid #eee; margin-bottom: 30px; }
+        header h1 { margin: 0; color: var(--primary); font-size: 2.2em; }
+
+        /* Business Info Form */
+        .section-title { border-left: 5px solid var(--primary); padding-left: 15px; margin: 30px 0 20px; color: var(--primary); }
+        .biz-form { background: #fff; border: 1px solid #ddd; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .form-group label { display: block; font-size: 0.85em; margin-bottom: 8px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+
+        /* Product Grid */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 30px; margin-top: 20px; }
+        .card { background: var(--card); border-radius: 12px; border: 1px solid #eaeaea; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .product-header { padding: 15px 20px; background: #f8f9f8; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .tag { background: var(--accent); color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.75em; font-weight: bold; }
+        
+        .product-body { display: flex; padding: 20px; gap: 20px; }
+        .product-img { width: 200px; height: 200px; background: #eee; border-radius: 10px; flex-shrink: 0; object-fit: cover; }
+        .product-info { flex: 1; }
+        .product-info h3 { margin: 0 0 10px; color: var(--primary); }
+        .recommendation { font-size: 0.85em; color: #555; font-style: italic; margin-bottom: 10px; line-height: 1.4; }
+        .benchmarks { font-size: 0.8em; background: #fff9eb; padding: 10px; border-left: 3px solid #f39c12; }
+
+        /* Simulator */
+        .simulator { padding: 20px; border-top: 1px dashed #eee; background: #fafafa; }
+        .sim-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .results-bar { background: var(--primary); color: white; border-radius: 10px; padding: 15px; display: flex; justify-content: space-around; }
+        .res-item { text-align: center; }
+        .res-item label { display: block; font-size: 0.75em; opacity: 0.9; margin-bottom: 5px; }
+        .res-item span { font-size: 1.3em; font-weight: bold; }
+
+        .btn-order { width: 100%; background: #34495e; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1em; transition: 0.3s; }
+        .btn-order:hover { background: #2c3e50; }
+
+        /* Footer */
+        footer { margin-top: 50px; padding: 40px; background: #f4f4f4; border-radius: 15px; font-size: 0.9em; }
+        footer h4 { margin-top: 0; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+        footer ul { padding-left: 20px; line-height: 1.8; }
+        footer a { color: var(--primary); font-weight: bold; }
+
+        .lang-content { display: none; }
+        .lang-content.visible { display: block; }
+
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); 
+        }
+
+        .modal-content {
+            margin: 15% auto; 
+            display: block;
+            width: 80%; 
+            max-width: 700px; 
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-switch">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">English</button>
+        <button class="lang-btn" id="btn-cn" onclick="setLang('cn')">中文版</button>
+    </div>
+
+    <div class="biz-form">
+        <h3 class="section-title" id="form-title">Partner Inquiry Information</h3>
+        <div class="form-grid">
+            <div class="form-group"><label id="lbl-co">Company Name</label><input type="text" id="biz-company" placeholder="e.g. HomeDecor LLC" required></div>
+            <div class="form-group"><label id="lbl-name">Contact Person</label><input type="text" id="biz-name" required></div>
+            <div class="form-group"><label id="lbl-port">Destination Port</label><input type="text" id="biz-port" placeholder="e.g. LAX / New York" required></div>
+            <div class="form-group">
+                <label id="lbl-term">Trade Term</label>
+                <select id="biz-term" required><option value="DDP">DDP (Door to Door)</option><option value="EXW">EXW</option><option value="FOB">FOB</option></select>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-display">
+        <h2 class="section-title" id="grid-title">Spring 2026 Strategic Portfolio</h2>
+        <div class="product-grid" id="product-container">
+            <div class="card">
+                <img src="assets/California Bloom Wreath.png" alt="California Bloom Wreath" class="product-img">
+                <h3>California Bloom Wreath</h3>
+            </div>
+            <div class="card">
+                <img src="assets/Florida Coastline Wreath.png" alt="Florida Coastline Wreath" class="product-img">
+                <h3>Florida Coastline Wreath</h3>
+            </div>
+            <div class="card">
+                <img src="assets/NYC Urban Garden Wreath.png" alt="NYC Urban Garden Wreath" class="product-img">
+                <h3>NYC Urban Garden Wreath</h3>
+            </div>
+            <div class="card">
+                <img src="assets/Texas Spring Wreath.png" alt="Texas Spring Wreath" class="product-img">
+                <h3>Texas Spring Wreath</h3>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <h4 id="footer-title">Market Analysis Data Sources</h4>
+        <ul>
+            <li><strong>MSRP Strategy:</strong> Benchmarked against <strong><a href="https://safnow.org" target="_blank">SAF Standards</a></strong> (3.5x-5x markup) and <strong><a href="https://www.etsy.com" target="_blank">Etsy Bestsellers</a></strong> ($70-$135).</li>
+            <li><strong>Trend Alignment:</strong> Styles mapped to <strong>The Spruce 2026 Forecast</strong> for Coastal FL, Rustic TX, and Organic CA.</li>
+            <li><strong>Cost Basis:</strong> Forest Base 31418452 ($4.69) + Starry Cosmos 67219710 ($1.14).</li>
+        </ul>
+    </footer>
+</div>
+
+<div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    const products = [
+        { id: 1, sku: "31418452-CAL", nameEn: "California Bloom", nameCn: "加州阳光", tagEn: "West Coast (CA)", tagCn: "西海岸 (加州)", ddp: 18.50, msrp: 65, 
+          descEn: "Bright & Organic Chic. Tailored for CA sun-drenched decor.", 
+          descCn: "明快自然的有机时尚感，专为加州充足阳光的家居风格设计。",
+          reasonEn: "Matches 'Nature-Inspired' 2026 CA trends emphasizing airy textures.",
+          reasonCn: "符合2026年加州‘自然灵感’趋势，强调通透的质感。"
+        },
+        { id: 2, sku: "31418452-TEX", nameEn: "Texas Spring", nameCn: "德州之春", tagEn: "South (TX)", tagCn: "南部 (德州)", ddp: 16.80, msrp: 52, 
+          descEn: "Rustic Elegance. Asymmetric focus for Southern farmhouse appeal.", 
+          descCn: "质朴优雅。非对称重心设计，符合南部农场美学。",
+          reasonEn: "Targets 'Rustic Elegance' popular in traditional Southern homes.",
+          reasonCn: "针对传统南部家庭喜爱的‘乡村优雅’风格。"
+        },
+        { id: 3, sku: "31395305-NYC", nameEn: "NYC Urban Garden", nameCn: "纽约都市", tagEn: "Northeast (NY)", tagCn: "东北部 (纽约)", ddp: 22.00, msrp: 85, 
+          descEn: "Modern Minimalism. 3D-textured foliage for high-end urban spaces.", 
+          descCn: "现代极简。3D仿真叶片提升质感，适合高端都市空间。",
+          reasonEn: "Sophisticated structured nature fits refined NYC apartment decor.",
+          reasonCn: "精致的结构化自然风格，契合纽约公寓的洗练内饰。"
+        },
+        { id: 4, sku: "34906060-FLA", nameEn: "Florida Coastline", nameCn: "佛州海岸", tagEn: "Southeast (FL)", tagCn: "东南部 (佛州)", ddp: 21.00, msrp: 75, 
+          descEn: "Coastal Lush & Dynamic. Lush greenery mimicking sea breezes.", 
+          descCn: "茂密动感的沿海热带风。模仿海风拂过的蓬松绿植效果。",
+          reasonEn: "Lush tropical textures resonate with Southeast coastal lifestyle.",
+          reasonCn: "茂密的热带质感与美国东南部沿海生活方式产生共鸣。"
+        }
+    ];
+
+    let currentLang = 'en';
+
+    function setLang(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-' + lang).classList.add('active');
+        
+        const ui = {
+            en: { form: "Inquiry Information", co: "Company Name", name: "Contact Person", port: "Destination Port", term: "Trade Term", grid: "Spring 2026 Strategic Portfolio", footer: "Market Analysis Data Sources", qty: "Order Qty (MOQ 100)", msrp: "Planned Retail ($)", cost: "Total Cost", profit: "Net Profit", margin: "Margin", btn: "Generate Inquiry" },
+            cn: { form: "合作伙伴询盘信息", co: "公司名称", name: "联系人", port: "目的地港口", term: "贸易条款", grid: "2026 春季战略系列", footer: "市场分析数据来源", qty: "起订量 (MOQ 100)", msrp: "预估零售价 ($)", cost: "总成本 (DDP)", profit: "净利润", margin: "毛利率", btn: "生成正式询盘邮件" }
+        };
+        
+        const labels = ui[lang];
+        document.getElementById('form-title').innerText = labels.form;
+        document.getElementById('lbl-co').innerText = labels.co;
+        document.getElementById('lbl-name').innerText = labels.name;
+        document.getElementById('lbl-port').innerText = labels.port;
+        document.getElementById('lbl-term').innerText = labels.term;
+        document.getElementById('grid-title').innerText = labels.grid;
+        document.getElementById('footer-title').innerText = labels.footer;
+        
+        renderProducts(labels);
+    }
+
+    function renderProducts(labels) {
+        const container = document.getElementById('product-container');
+        container.innerHTML = '';
+        products.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="product-header">
+                    <span class="tag">${currentLang === 'en' ? p.tagEn : p.tagCn}</span>
+                    <strong>SKU: ${p.sku}</strong>
+                </div>
+                <div class="product-body">
+                    <div class="product-img" style="display:flex; align-items:center; justify-content:center; text-align:center; font-size:0.8em; color:#888;">
+                        <img src="assets/${p.nameEn.replace(/ /g, ' ')} Wreath.png" alt="${p.nameEn}" class="product-img" onclick="openModal(this.src)">
+                    </div>
+                    <div class="product-info">
+                        <h3>${currentLang === 'en' ? p.nameEn : p.nameCn}</h3>
+                        <p>${currentLang === 'en' ? p.descEn : p.descCn}</p>
+                        <div class="recommendation"><strong>${currentLang === 'en' ? 'Reason: ' : '推荐理由：'}</strong>${currentLang === 'en' ? p.reasonEn : p.reasonCn}</div>
+                        <div class="benchmarks"><strong>MSRP Range:</strong> $${p.msrp}-$${p.msrp+15} <br>Based on SAF 4x Markup</div>
+                    </div>
+                </div>
+                <div class="simulator">
+                    <div class="sim-inputs">
+                        <div><label>${labels.qty}</label><input type="number" id="qty-${p.id}" value="100" min="100" oninput="updateROI(${p.id})"></div>
+                        <div><label>${labels.msrp}</label><input type="number" id="msrp-${p.id}" value="${p.msrp}" oninput="updateROI(${p.id})"></div>
+                    </div>
+                    <div class="results-bar">
+                        <div class="res-item"><label>${labels.cost}</label><span id="cost-${p.id}">$0</span></div>
+                        <div class="res-item"><label>${labels.profit}</label><span id="profit-${p.id}">$0</span></div>
+                        <div class="res-item"><label>${labels.margin}</label><span id="margin-${p.id}">0%</span></div>
+                    </div>
+                    <button class="btn-order" onclick="validateInquiry(${p.id})">${labels.btn}</button>
+                </div>`;
+            container.appendChild(card);
+            updateROI(p.id);
+        });
+    }
+
+    function updateROI(id) {
+        const p = products.find(x => x.id === id);
+        const qty = parseFloat(document.getElementById(`qty-${id}`).value) || 0;
+        const retail = parseFloat(document.getElementById(`msrp-${id}`).value) || 0;
+        const totalCost = qty * p.ddp;
+        const profit = (qty * retail) - totalCost;
+        const margin = (qty * retail) > 0 ? (profit / (qty * retail) * 100) : 0;
+        
+        document.getElementById(`cost-${id}`).innerText = '$' + totalCost.toLocaleString();
+        document.getElementById(`profit-${id}`).innerText = '$' + profit.toLocaleString();
+        document.getElementById(`margin-${id}`).innerText = margin.toFixed(1) + '%';
+    }
+
+    function sendInquiry(id) {
+        const p = products.find(x => x.id === id);
+        const biz = { co: document.getElementById('biz-company').value || "N/A", name: document.getElementById('biz-name').value || "N/A", port: document.getElementById('biz-port').value || "N/A", term: document.getElementById('biz-term').value };
+        const qty = document.getElementById(`qty-${id}`).value;
+        const msrp = document.getElementById(`msrp-${id}`).value;
+        const profit = document.getElementById(`profit-${id}`).innerText;
+        const margin = document.getElementById(`margin-${id}`).innerText;
+
+        const subject = encodeURIComponent(`Inquiry: ${p.sku} - ${biz.co}`);
+        const body = encodeURIComponent(
+            `DEAR SALES TEAM,\n\nBUSINESS PROFILE:\n- Company: ${biz.co}\n- Name: ${biz.name}\n- Port: ${biz.port}\n- Terms: ${biz.term}\n\n` +
+            `ORDER DETAILS:\n- SKU: ${p.sku}\n- Quantity: ${qty} units\n- Target MSRP: $${msrp}\n\n` +
+            `PROJECTION:\n- Estimated Net Profit: ${profit}\n- Estimated Margin: ${margin}\n\nPLEASE SEND FORMAL QUOTATION.`
+        );
+        window.location.href = `mailto:sales@yourcompany.com?subject=${subject}&body=${body}`;
+    }
+
+    // Image zoom functionality
+    function openModal(src) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImage.src = src;
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Validate required fields before sending inquiry with bilingual support
+    function validateInquiry(id) {
+        const company = document.getElementById('biz-company').value.trim();
+        const contact = document.getElementById('biz-name').value.trim();
+        const port = document.getElementById('biz-port').value.trim();
+        const term = document.getElementById('biz-term').value;
+
+        const messages = {
+            en: 'Please fill in the company information, contact person, port, and transaction terms.',
+            cn: '请填写完整的公司信息、联系人、港口和交易方式。'
+        };
+
+        if (!company || !contact || !port || !term) {
+            alert(messages[currentLang]);
+            return;
+        }
+
+        sendInquiry(id);
+    }
+
+    // Add bilingual disclaimer for cost price
+    window.onload = () => {
+        setLang('en');
+        const disclaimers = {
+            en: 'Cost price is for reference only. Final pricing is subject to official quotation.',
+            cn: '成本价格仅供参考，具体以正式报价为准。'
+        };
+
+        const costDisclaimer = document.createElement('p');
+        costDisclaimer.style.fontSize = '0.85em';
+        costDisclaimer.style.color = '#888';
+        costDisclaimer.style.marginTop = '10px';
+        costDisclaimer.id = 'cost-disclaimer';
+        costDisclaimer.innerText = disclaimers[currentLang];
+
+        document.querySelectorAll('.benchmarks').forEach(benchmark => {
+            benchmark.appendChild(costDisclaimer.cloneNode(true));
+        });
+
+        // Update disclaimer text on language switch
+        const originalSetLang = setLang;
+        setLang = function(lang) {
+            originalSetLang(lang);
+            document.querySelectorAll('#cost-disclaimer').forEach(disclaimer => {
+                disclaimer.innerText = disclaimers[lang];
+            });
+        };
+    };
+</script>
+
+</body>
+</html>
