@@ -259,11 +259,9 @@
 
         const subject = encodeURIComponent(`Inquiry: ${p.sku} - ${biz.co}`);
         const body = encodeURIComponent(
-            `DEAR SALES TEAM,\n\nBUSINESS PROFILE:\n- Company: ${biz.co}\n- Name: ${biz.name}\n- Port: ${biz.port}\n- Terms: ${biz.term}\n\n` +
-            `ORDER DETAILS:\n- SKU: ${p.sku}\n- Quantity: ${qty} units\n- Target MSRP: $${msrp}\n\n` +
-            `PROJECTION:\n- Estimated Net Profit: ${profit}\n- Estimated Margin: ${margin}\n\nPLEASE SEND FORMAL QUOTATION.`
+            `Company: ${biz.co}\nContact: ${biz.name}\nPort: ${biz.port}\nTerm: ${biz.term}\n\nProduct: ${p.nameEn}\nQuantity: ${qty}\nMSRP: ${msrp}\nProfit: ${profit}\nMargin: ${margin}`
         );
-        window.location.href = `mailto:sales@yourcompany.com?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:911161287@qq.com?subject=${subject}&body=${body}`;
     }
 
     // Image zoom functionality
