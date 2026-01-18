@@ -55,6 +55,36 @@
 
         .lang-content { display: none; }
         .lang-content.visible { display: block; }
+
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.8); 
+        }
+
+        .modal-content {
+            margin: 15% auto; 
+            display: block;
+            width: 80%; 
+            max-width: 700px; 
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +138,11 @@
             <li><strong>Cost Basis:</strong> Forest Base 31418452 ($4.69) + Starry Cosmos 67219710 ($1.14).</li>
         </ul>
     </footer>
+</div>
+
+<div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
 </div>
 
 <script>
@@ -175,7 +210,7 @@
                 </div>
                 <div class="product-body">
                     <div class="product-img" style="display:flex; align-items:center; justify-content:center; text-align:center; font-size:0.8em; color:#888;">
-                        <img src="assets/${p.nameEn.replace(/ /g, ' ')} Wreath.png" alt="${p.nameEn}" class="product-img">
+                        <img src="assets/${p.nameEn.replace(/ /g, ' ')} Wreath.png" alt="${p.nameEn}" class="product-img" onclick="openModal(this.src)">
                     </div>
                     <div class="product-info">
                         <h3>${currentLang === 'en' ? p.nameEn : p.nameCn}</h3>
@@ -194,7 +229,7 @@
                         <div class="res-item"><label>${labels.profit}</label><span id="profit-${p.id}">$0</span></div>
                         <div class="res-item"><label>${labels.margin}</label><span id="margin-${p.id}">0%</span></div>
                     </div>
-                    <button class="btn-order" onclick="sendInquiry(${p.id})">${labels.btn}</button>
+                    <button class="btn-order" onclick="validateInquiry(${p.id})">${labels.btn}</button>
                 </div>`;
             container.appendChild(card);
             updateROI(p.id);
@@ -231,7 +266,53 @@
         window.location.href = `mailto:sales@yourcompany.com?subject=${subject}&body=${body}`;
     }
 
-    window.onload = () => setLang('en');
+    // Image zoom functionality
+    function openModal(src) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modal.style.display = 'block';
+        modalImage.src = src;
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // Validate required fields before sending inquiry
+    function validateInquiry(id) {
+        const company = document.getElementById('biz-company').value.trim();
+        const contact = document.getElementById('biz-name').value.trim();
+        const port = document.getElementById('biz-port').value.trim();
+        const term = document.getElementById('biz-term').value;
+
+        if (!company || !contact || !port || !term) {
+            alert('请填写完整的公司信息、联系人、港口和交易方式。');
+            return;
+        }
+
+        sendInquiry(id);
+    }
+
+    window.onload = () => {
+        setLang('en');
+        const costDisclaimer = document.createElement('p');
+        costDisclaimer.style.fontSize = '0.85em';
+        costDisclaimer.style.color = '#888';
+        costDisclaimer.style.marginTop = '10px';
+        costDisclaimer.innerText = '成本价格仅供参考，具体以正式报价为准。';
+        document.querySelectorAll('.benchmarks').forEach(benchmark => {
+            benchmark.appendChild(costDisclaimer.cloneNode(true));
+        });
+    };
 </script>
 
 </body>
