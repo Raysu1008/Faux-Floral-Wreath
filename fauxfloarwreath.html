@@ -287,31 +287,53 @@
         }
     }
 
-    // Validate required fields before sending inquiry
+    // Validate required fields before sending inquiry with bilingual support
     function validateInquiry(id) {
         const company = document.getElementById('biz-company').value.trim();
         const contact = document.getElementById('biz-name').value.trim();
         const port = document.getElementById('biz-port').value.trim();
         const term = document.getElementById('biz-term').value;
 
+        const messages = {
+            en: 'Please fill in the company information, contact person, port, and transaction terms.',
+            cn: '请填写完整的公司信息、联系人、港口和交易方式。'
+        };
+
         if (!company || !contact || !port || !term) {
-            alert('请填写完整的公司信息、联系人、港口和交易方式。');
+            alert(messages[currentLang]);
             return;
         }
 
         sendInquiry(id);
     }
 
+    // Add bilingual disclaimer for cost price
     window.onload = () => {
         setLang('en');
+        const disclaimers = {
+            en: 'Cost price is for reference only. Final pricing is subject to official quotation.',
+            cn: '成本价格仅供参考，具体以正式报价为准。'
+        };
+
         const costDisclaimer = document.createElement('p');
         costDisclaimer.style.fontSize = '0.85em';
         costDisclaimer.style.color = '#888';
         costDisclaimer.style.marginTop = '10px';
-        costDisclaimer.innerText = '成本价格仅供参考，具体以正式报价为准。';
+        costDisclaimer.id = 'cost-disclaimer';
+        costDisclaimer.innerText = disclaimers[currentLang];
+
         document.querySelectorAll('.benchmarks').forEach(benchmark => {
             benchmark.appendChild(costDisclaimer.cloneNode(true));
         });
+
+        // Update disclaimer text on language switch
+        const originalSetLang = setLang;
+        setLang = function(lang) {
+            originalSetLang(lang);
+            document.querySelectorAll('#cost-disclaimer').forEach(disclaimer => {
+                disclaimer.innerText = disclaimers[lang];
+            });
+        };
     };
 </script>
 
